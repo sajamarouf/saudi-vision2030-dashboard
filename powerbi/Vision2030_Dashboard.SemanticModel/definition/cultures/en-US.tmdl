@@ -1,0 +1,221 @@
+cultureInfo en-US
+
+	linguisticMetadata =
+			{
+			  "Version": "2.0.0",
+			  "Language": "en-US",
+			  "Entities": {
+			    "dimindicator.indicatorname": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "DimIndicator",
+			          "ConceptualProperty": "IndicatorName"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Indicator": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "factkpi.latest_value": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "FactKPI",
+			          "ConceptualProperty": "Latest Value"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Latest": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "factkpi.latest_quarter_label": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "FactKPI",
+			          "ConceptualProperty": "Latest Quarter Label"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Quarter": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "factkpi.target_2030_original": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "FactKPI",
+			          "ConceptualProperty": "Target 2030 Original"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Original 2030 target": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "factkpi.target_2030_revised": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "FactKPI",
+			          "ConceptualProperty": "Target 2030 Revised"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Revised 2030 target": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "factkpi.yoy_arrow": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "FactKPI",
+			          "ConceptualProperty": "YoY Arrow"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Year on year": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "factkpi.target_status": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "FactKPI",
+			          "ConceptualProperty": "Target Status"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Status": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "dimsource.title": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "DimSource",
+			          "ConceptualProperty": "Title"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Release": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "dimsource.sourcetype": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "DimSource",
+			          "ConceptualProperty": "SourceType"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Type": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "dimsource.url": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "DimSource",
+			          "ConceptualProperty": "Url"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Link": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    }
+			  }
+			}
+		contentType: json
+

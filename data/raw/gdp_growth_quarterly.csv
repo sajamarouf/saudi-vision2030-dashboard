@@ -1,0 +1,8 @@
+quarter,total_gdp,oil,non_oil,government,estimate_type,source_id,note
+2025Q1,3.4,-0.5,4.9,3.2,final,GASTAT_GDP_Q1_2025,
+2025Q2,3.9,3.8,4.6,0.6,final,GASTAT_GDP_Q2_2025,
+2025Q3,4.8,8.3,4.3,1.4,final,GASTAT_GDP_Q3_2025,flash had 5.0 / 8.2 / 4.5 / 1.8
+2025Q4,4.9,10.4,4.1,-1.2,final,GASTAT_GDP_2025,
+2026Q1,3.0,2.9,2.9,1.5,final,GASTAT_GDP_Q1_2026,flash had 2.8 / 2.3 / 2.8 / 1.5
+2026Q2,-4.7,-24.7,0.8,0.9,mixed,GASTAT_FLASH_Q3_2026;GASTAT_FLASH_Q2_2026,GDP and non-oil revised in Q3 flash; oil & government still flash values
+2026Q3,-3.8,-20.4,1.9,-2.7,flash,GASTAT_FLASH_Q3_2026,

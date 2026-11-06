@@ -1,0 +1,365 @@
+table FactKPI
+	lineageTag: 890d72b7-8c3f-419c-acc8-cdc4a1344f40
+
+	measure 'KPI Value' = ```
+			
+					IF ( HASONEVALUE ( DimIndicator[IndicatorKey] ), AVERAGE ( FactKPI[Value] ) )
+			```
+		formatString: 0.0\%
+		lineageTag: 5a685703-3cfd-4c3a-ab31-2b33b63e137b
+
+	measure 'Latest Quarter Index' = ```
+			
+					CALCULATE ( MAXX ( FactKPI, RELATED ( DimQuarter[QuarterIndex] ) ), ALL ( DimQuarter ) )
+			```
+		formatString: 0
+		lineageTag: 70161746-348f-4b0e-8891-ff9d07bd5f7d
+
+	measure 'Latest Value' = ```
+			
+					VAR _idx = [Latest Quarter Index]
+					RETURN CALCULATE ( [KPI Value], ALL ( DimQuarter ), DimQuarter[QuarterIndex] = _idx )
+			```
+		formatString: 0.0\%
+		lineageTag: c6acb869-229f-4bc8-b9e6-76d469a86616
+
+	measure 'Latest Quarter Label' = ```
+			
+					VAR _idx = [Latest Quarter Index]
+					RETURN CALCULATE ( SELECTEDVALUE ( DimQuarter[QuarterLabel] ), ALL ( DimQuarter ), DimQuarter[QuarterIndex] = _idx )
+			```
+		lineageTag: cf0d45af-0d02-4609-b438-48f1b29eaa94
+
+	measure 'Value Prev Quarter' = ```
+			
+					VAR _idx = MAX ( DimQuarter[QuarterIndex] )
+					RETURN CALCULATE ( [KPI Value], ALL ( DimQuarter ), DimQuarter[QuarterIndex] = _idx - 1 )
+			```
+		formatString: 0.0\%
+		lineageTag: 8cbcb2f5-6833-4e5e-9f9a-2f27b4385c61
+
+	measure 'Value Same Quarter LY' = ```
+			
+					VAR _idx = MAX ( DimQuarter[QuarterIndex] )
+					RETURN CALCULATE ( [KPI Value], ALL ( DimQuarter ), DimQuarter[QuarterIndex] = _idx - 4 )
+			```
+		formatString: 0.0\%
+		lineageTag: 56b3a678-b137-4fd4-b819-acd48d385a49
+
+	measure 'QoQ Change pp' = ```
+			
+					IF ( NOT ISBLANK ( [Value Prev Quarter] ), [KPI Value] - [Value Prev Quarter] )
+			```
+		formatString: +0.0 \p\p;-0.0 \p\p;0.0 \p\p
+		lineageTag: 3c2ac270-236a-4db8-be5d-57add5aa7bd8
+
+	measure 'YoY Change pp' = ```
+			
+					IF ( NOT ISBLANK ( [Value Same Quarter LY] ), [KPI Value] - [Value Same Quarter LY] )
+			```
+		formatString: +0.0 \p\p;-0.0 \p\p;0.0 \p\p
+		lineageTag: 62b415cf-0616-4f2b-bccf-11791ad04ad7
+
+	measure 'Rolling 4Q Avg' = ```
+			
+					VAR _idx = MAX ( DimQuarter[QuarterIndex] )
+					VAR _win = CALCULATETABLE ( VALUES ( DimQuarter[QuarterIndex] ), ALL ( DimQuarter ), DimQuarter[QuarterIndex] > _idx - 4, DimQuarter[QuarterIndex] <= _idx )
+					VAR _n = CALCULATE ( COUNTROWS ( FactKPI ), ALL ( DimQuarter ), DimQuarter[QuarterIndex] IN _win )
+					RETURN IF ( _n = 4, CALCULATE ( AVERAGE ( FactKPI[Value] ), ALL ( DimQuarter ), DimQuarter[QuarterIndex] IN _win ) )
+			```
+		formatString: 0.0\%
+		lineageTag: 98349c87-7747-4888-bacc-e978ea36ec94
+
+	measure 'Latest YoY pp' = ```
+			
+					VAR _idx = [Latest Quarter Index]
+					VAR _ly = CALCULATE ( [KPI Value], ALL ( DimQuarter ), DimQuarter[QuarterIndex] = _idx - 4 )
+					RETURN IF ( NOT ISBLANK ( _ly ), [Latest Value] - _ly )
+			```
+		formatString: +0.0 \p\p;-0.0 \p\p;0.0 \p\p
+		lineageTag: daef950e-1c14-45d7-a575-b054f887f017
+
+	measure 'YoY Arrow' = ```
+			
+					VAR _d = [Latest YoY pp]
+					RETURN SWITCH ( TRUE (), ISBLANK ( _d ), "", _d = 0, "▬ 0.0 pp YoY", _d > 0, "▲ +" & FORMAT ( _d, "0.0" ) & " pp YoY", "▼ " & FORMAT ( _d, "0.0" ) & " pp YoY" )
+			```
+		lineageTag: 404ed93e-6c44-4873-aecc-09b269f51723
+
+	measure 'YoY Color' = ```
+			
+					VAR _d = [Latest YoY pp]
+					VAR _better = SELECTEDVALUE ( DimIndicator[BetterWhen] )
+					RETURN SWITCH ( TRUE (), ISBLANK ( _d ) || _d = 0, "#6B7280", ( _d < 0 && _better = "lower" ) || ( _d > 0 && _better = "higher" ), "#0E7C4A", "#B42318" )
+			```
+		lineageTag: 7b498fdc-a905-4983-9d38-0585c884c1da
+
+	measure 'Target 2030 Original' = MAX ( DimTarget[OriginalTarget2030] )
+		formatString: 0.0\%
+		lineageTag: a5da126d-bb2c-49d5-b891-22c166d0ccd3
+
+	measure 'Target 2030 Revised' = MAX ( DimTarget[RevisedTarget2030] )
+		formatString: 0.0\%
+		lineageTag: b63101ac-1521-4567-85b8-eae8bf365924
+
+	measure 'Baseline Value' = MAX ( DimTarget[BaselineValue] )
+		formatString: 0.0\%
+		lineageTag: 150125cb-c014-4fa2-abe0-4d836befb112
+
+	measure 'Gap to Revised Target pp' = [Latest Value] - [Target 2030 Revised]
+		formatString: +0.0 \p\p;-0.0 \p\p;0.0 \p\p
+		lineageTag: f0b888c4-b71b-4911-9127-a3bbeec678be
+
+	measure 'Progress to Revised Target %' = ```
+			
+					VAR _b = [Baseline Value]
+					VAR _t = [Target 2030 Revised]
+					RETURN IF ( NOT ISBLANK ( _t ), DIVIDE ( [Latest Value] - _b, _t - _b ) )
+			```
+		formatString: 0%
+		lineageTag: a98b954a-a7d4-4197-ac4e-c8ef8b8eeecf
+
+	measure 'Target Status' = ```
+			
+					VAR _p = [Progress to Revised Target %]
+					VAR _b = [Baseline Value]
+					VAR _orig = DIVIDE ( [Latest Value] - _b, [Target 2030 Original] - _b )
+					RETURN SWITCH ( TRUE (), ISBLANK ( _p ), BLANK (), _p >= 1, "Revised target met", _orig >= 1, "Original met · revised pending", "Below original target" )
+			```
+		lineageTag: 322279b6-2774-4d19-b2f1-fbcb27ebe713
+
+	measure 'Saudi Unemployment Latest' = CALCULATE ( [Latest Value], DimIndicator[IndicatorKey] = "UR_SA_T" )
+		formatString: 0.0\%
+		lineageTag: ceb863cb-6ac5-4fbb-969e-3fa7657a068e
+
+	measure 'Female LFPR Latest' = CALCULATE ( [Latest Value], DimIndicator[IndicatorKey] = "LFPR_SA_F" )
+		formatString: 0.0\%
+		lineageTag: f8fec7d1-d7b4-479e-a2a5-8b6a4f387897
+
+	measure 'Non-Oil Growth Latest' = CALCULATE ( [Latest Value], DimIndicator[IndicatorKey] = "GDP_YOY_NONOIL" )
+		formatString: +0.0\%;-0.0\%;0.0\%
+		lineageTag: 87f5dc89-8118-44a0-986e-ad231d4866de
+
+	measure 'Female LFPR' = CALCULATE ( [KPI Value], DimIndicator[IndicatorKey] = "LFPR_SA_F" )
+		formatString: 0.0\%
+		lineageTag: 91e3829a-92fb-486f-af7c-959e9a9e8790
+
+	measure 'Male LFPR' = CALCULATE ( [KPI Value], DimIndicator[IndicatorKey] = "LFPR_SA_M" )
+		formatString: 0.0\%
+		lineageTag: c136b1d2-ccee-4f85-9d23-6ec38abb33d8
+
+	measure 'Female UR' = CALCULATE ( [KPI Value], DimIndicator[IndicatorKey] = "UR_SA_F" )
+		formatString: 0.0\%
+		lineageTag: e89f9978-b768-44f8-932f-a86e71368484
+
+	measure 'Male UR' = CALCULATE ( [KPI Value], DimIndicator[IndicatorKey] = "UR_SA_M" )
+		formatString: 0.0\%
+		lineageTag: d8f4f979-58c1-44b9-ad77-8ffa6f916a90
+
+	measure 'Female EPR' = CALCULATE ( [KPI Value], DimIndicator[IndicatorKey] = "EPR_SA_F" )
+		formatString: 0.0\%
+		lineageTag: 21d5fe2c-cedc-40f7-bead-1d4a12f3e8fa
+
+	measure 'Saudi UR' = CALCULATE ( [KPI Value], DimIndicator[IndicatorKey] = "UR_SA_T" )
+		formatString: 0.0\%
+		lineageTag: 4910e297-25ad-4f94-bf98-74aff869ad74
+
+	measure 'Gender Gap Participation pp' = [Male LFPR] - [Female LFPR]
+		formatString: +0.0 \p\p;-0.0 \p\p;0.0 \p\p
+		lineageTag: 682d5223-182f-4d54-b809-80b442004bfd
+
+	measure 'Gender Gap Unemployment pp' = [Female UR] - [Male UR]
+		formatString: +0.0 \p\p;-0.0 \p\p;0.0 \p\p
+		lineageTag: 15bbd464-6647-4196-b26a-dd3043c40a4d
+
+	measure 'Female LFPR Peak' = CALCULATE ( MAX ( FactKPI[Value] ), ALL ( DimQuarter ), DimIndicator[IndicatorKey] = "LFPR_SA_F" )
+		formatString: 0.0\%
+		lineageTag: 84256878-79bb-4e31-8124-c67e64c120d3
+
+	measure 'Female UR at Peak Participation' = ```
+			
+					VAR _peak = [Female LFPR Peak]
+					VAR _epr = [Female EPR]
+					RETURN IF ( NOT ISBLANK ( _epr ), DIVIDE ( _peak - _epr, _peak ) * 100 )
+			```
+		formatString: 0.0\%
+		lineageTag: 98681eff-9e7a-47ab-8504-e9ca50780933
+
+	measure 'Denominator Effect pp' = ```
+			
+					IF ( NOT ISBLANK ( [Female UR at Peak Participation] ), [Female UR at Peak Participation] - [Female UR] )
+			```
+		formatString: +0.0 \p\p;-0.0 \p\p;0.0 \p\p
+		lineageTag: ee968228-ecd3-49b4-b6b8-3631ff0cb49a
+
+	measure 'Female UR Implied (Identity Check)' = DIVIDE ( [Female LFPR] - [Female EPR], [Female LFPR] ) * 100
+		formatString: 0.0\%
+		lineageTag: 0a2ecc82-b7ec-435a-a936-56081635398d
+
+	measure 'Non-Oil Growth' = CALCULATE ( [KPI Value], DimIndicator[IndicatorKey] = "GDP_YOY_NONOIL" )
+		formatString: +0.0\%;-0.0\%;0.0\%
+		lineageTag: e2c8f23d-9391-4b30-877c-8d0780819fd3
+
+	measure 'Oil Growth' = CALCULATE ( [KPI Value], DimIndicator[IndicatorKey] = "GDP_YOY_OIL" )
+		formatString: +0.0\%;-0.0\%;0.0\%
+		lineageTag: c8bd0785-bf7d-47bc-ae47-a3bcc7560b01
+
+	measure 'Total GDP Growth' = CALCULATE ( [KPI Value], DimIndicator[IndicatorKey] = "GDP_YOY_T" )
+		formatString: +0.0\%;-0.0\%;0.0\%
+		lineageTag: 45094850-44b8-44ed-bcc5-622d2c68439c
+
+	measure 'Non-Oil minus Oil Spread pp' = [Non-Oil Growth] - [Oil Growth]
+		formatString: +0.0 \p\p;-0.0 \p\p;0.0 \p\p
+		lineageTag: 77e9e8f4-ee68-4eb1-bf18-cdb46e153d2f
+
+	measure 'Quarters Non-Oil Beat Oil' = ```
+			
+					COUNTROWS ( FILTER ( VALUES ( DimQuarter[QuarterKey] ), NOT ISBLANK ( [Non-Oil Growth] ) && [Non-Oil Growth] > [Oil Growth] ) )
+			```
+		formatString: 0
+		lineageTag: c8e614fd-3f08-43fb-9624-51846b059188
+
+	measure 'Quarters With GDP Data' = ```
+			
+					COUNTROWS ( FILTER ( VALUES ( DimQuarter[QuarterKey] ), NOT ISBLANK ( [Non-Oil Growth] ) ) )
+			```
+		formatString: \o\f 0
+		lineageTag: a6d395bc-3c8f-46d4-a13a-8864650a5afa
+
+	measure 'Non-Oil Share of Real GDP %' = ```
+			
+					VAR _latest = TOPN ( 1, GDPLevels, GDPLevels[QuarterKey], DESC )
+					RETURN MAXX ( _latest, GDPLevels[NonOilSharePct] )
+			```
+		formatString: 0.0\%
+		lineageTag: 9cc4c17e-d1ff-4f9a-a4b3-374428baa87f
+
+	measure 'Oil Share of Real GDP %' = ```
+			
+					VAR _latest = TOPN ( 1, GDPLevels, GDPLevels[QuarterKey], DESC )
+					RETURN MAXX ( _latest, GDPLevels[OilSharePct] )
+			```
+		formatString: 0.0\%
+		lineageTag: 9fa08612-d368-4c40-a554-abc6fd34dcef
+
+	measure 'Estimate Type' = SELECTEDVALUE ( FactKPI[EstimateType], "mixed" )
+		lineageTag: fdef0663-208b-4c79-94de-2af1d11c84b7
+
+	measure 'Series Vintage' = SELECTEDVALUE ( FactKPI[SeriesVintage], "mixed" )
+		lineageTag: a2ce7371-8395-48ac-a58a-6833ab762dc4
+
+	measure 'Is Pre-Revision Series' = IF ( SELECTEDVALUE ( FactKPI[IsPreRevision] ) = TRUE (), 1, 0 )
+		formatString: 0
+		lineageTag: 2f6cb305-2370-46ac-a30a-e2c90ff67b26
+
+	measure 'Data Note' = ```
+			
+					VAR _n = SELECTEDVALUE ( FactKPI[Note] )
+					VAR _flash = SELECTEDVALUE ( FactKPI[IsFlash] )
+					RETURN TRIM ( IF ( _flash = TRUE (), "Flash / partly flash estimate - subject to revision. ", "" ) & IF ( [Is Pre-Revision Series] = 1, "Pre-2023 series (old census base). ", "" ) & _n )
+			```
+		lineageTag: 63645000-5b06-4460-88d6-84c0ee2a98a0
+
+	measure 'Change Since Start pp' = ```
+			
+					VAR _first = CALCULATE ( MIN ( DimQuarter[QuarterIndex] ), FILTER ( ALL ( DimQuarter ), NOT ISBLANK ( [KPI Value] ) ) )
+					VAR _start = CALCULATE ( [KPI Value], ALL ( DimQuarter ), DimQuarter[QuarterIndex] = _first )
+					RETURN [Latest Value] - _start
+			```
+		formatString: +0.0 \p\p;-0.0 \p\p;0.0 \p\p
+		lineageTag: e24265ab-8409-4c5c-809c-2d27c621b27b
+
+	measure 'Column Color Latest' = ```
+			
+					IF ( MAX ( DimQuarter[QuarterIndex] ) = [Latest Quarter Index], "#0E7C4A", "#A9D4BC" )
+			```
+		lineageTag: ab7fc018-c60b-4c99-924a-66a0cb59daeb
+
+	column QuarterKey
+		dataType: string
+		lineageTag: 8a39d4cb-6fcf-43b7-9d8f-8b977d3520b5
+		summarizeBy: none
+		sourceColumn: QuarterKey
+
+		annotation SummarizationSetBy = Automatic
+
+	column IndicatorKey
+		dataType: string
+		lineageTag: b22f6808-b55c-492b-b94d-af9ea1da54ce
+		summarizeBy: none
+		sourceColumn: IndicatorKey
+
+		annotation SummarizationSetBy = Automatic
+
+	column Value
+		dataType: double
+		lineageTag: 8f78ad14-c62c-4ca5-9aa6-df77917231a8
+		summarizeBy: sum
+		sourceColumn: Value
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column SeriesVintage
+		dataType: string
+		lineageTag: c6223648-6c56-4003-b088-8b71c5618b92
+		summarizeBy: none
+		sourceColumn: SeriesVintage
+
+		annotation SummarizationSetBy = Automatic
+
+	column EstimateType
+		dataType: string
+		lineageTag: 8a712380-e763-4c45-b8ce-0b5e3286a8aa
+		summarizeBy: none
+		sourceColumn: EstimateType
+
+		annotation SummarizationSetBy = Automatic
+
+	column SourceID
+		dataType: string
+		lineageTag: 6fbdec54-9420-4059-b52b-99c1e77f55b9
+		summarizeBy: none
+		sourceColumn: SourceID
+
+		annotation SummarizationSetBy = Automatic
+
+	column Note
+		dataType: string
+		lineageTag: 743081de-ae18-43bf-8766-870e84c7dc3e
+		summarizeBy: none
+		sourceColumn: Note
+
+		annotation SummarizationSetBy = Automatic
+
+	column IsFlash
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 9e3e495c-8ea8-4089-9a33-04b54ea1d183
+		summarizeBy: none
+		sourceColumn: IsFlash
+
+		annotation SummarizationSetBy = Automatic
+
+	column IsPreRevision
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: c19defe9-80b7-42cd-a60c-95128e5f4a7c
+		summarizeBy: none
+		sourceColumn: IsPreRevision
+
+		annotation SummarizationSetBy = Automatic
+
+	partition FactKPI = m
+		mode: import
+		source =
+				let
+				    Source = let Source = Vision2030DB{[Schema="dw",Item="vw_FactKPI"]}[Data], Typed = Table.TransformColumnTypes(Source, {{"QuarterKey", type text}, {"IndicatorKey", type text}, {"Value", type number}, {"SeriesVintage", type text}, {"EstimateType", type text}, {"SourceID", type text}, {"Note", type text}}), AddIsFlash = Table.AddColumn(Typed, "IsFlash", each [EstimateType] <> "final", type logical), AddIsPreRevision = Table.AddColumn(AddIsFlash, "IsPreRevision", each [SeriesVintage] = "pre_census2022", type logical) in AddIsPreRevision
+				in
+				    Source
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

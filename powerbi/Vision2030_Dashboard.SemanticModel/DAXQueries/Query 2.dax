@@ -1,0 +1,1 @@
+EVALUATE SUMMARIZECOLUMNS ( DimIndicator[IndicatorKey], "Arrow", [YoY Arrow] )

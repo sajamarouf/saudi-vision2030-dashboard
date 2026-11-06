@@ -1,0 +1,202 @@
+// =====================================================================
+//  Saudi Vision 2030 Analytics Dashboard — DAX measures
+//  Create an empty table called _Measures and paste each measure there.
+//  Model:  FactKPI[QuarterKey]  *→1  DimQuarter[QuarterKey]
+//          FactKPI[IndicatorKey] *→1 DimIndicator[IndicatorKey]
+//          DimTarget[IndicatorKey] *→1 DimIndicator[IndicatorKey]
+// =====================================================================
+
+
+// ---------- 1. Core value ------------------------------------------------
+KPI Value =
+IF (
+    HASONEVALUE ( DimIndicator[IndicatorKey] ),
+    AVERAGE ( FactKPI[Value] )          // one row per quarter×indicator, so AVERAGE = the value
+)
+
+// ---------- 2. Latest available quarter (ignores the date slicer) --------
+Latest Quarter Index =
+CALCULATE (
+    MAXX ( FactKPI, RELATED ( DimQuarter[QuarterIndex] ) ),
+    ALL ( DimQuarter )
+)
+
+Latest Value =
+VAR _idx = [Latest Quarter Index]
+RETURN
+    CALCULATE ( [KPI Value], ALL ( DimQuarter ), DimQuarter[QuarterIndex] = _idx )
+
+Latest Quarter Label =
+VAR _idx = [Latest Quarter Index]
+RETURN
+    CALCULATE ( SELECTEDVALUE ( DimQuarter[QuarterLabel] ), ALL ( DimQuarter ), DimQuarter[QuarterIndex] = _idx )
+
+// ---------- 3. Period comparisons (percentage points) --------------------
+Value Prev Quarter =
+VAR _idx = MAX ( DimQuarter[QuarterIndex] )
+RETURN
+    CALCULATE ( [KPI Value], ALL ( DimQuarter ), DimQuarter[QuarterIndex] = _idx - 1 )
+
+Value Same Quarter LY =
+VAR _idx = MAX ( DimQuarter[QuarterIndex] )
+RETURN
+    CALCULATE ( [KPI Value], ALL ( DimQuarter ), DimQuarter[QuarterIndex] = _idx - 4 )
+
+QoQ Change pp =
+IF ( NOT ISBLANK ( [Value Prev Quarter] ), [KPI Value] - [Value Prev Quarter] )
+
+YoY Change pp =
+IF ( NOT ISBLANK ( [Value Same Quarter LY] ), [KPI Value] - [Value Same Quarter LY] )
+
+// Seasonal noise is large in quarterly labour data — a 4-quarter mean is the honest trend line
+Rolling 4Q Avg =
+VAR _idx = MAX ( DimQuarter[QuarterIndex] )
+VAR _win =
+    CALCULATETABLE ( VALUES ( DimQuarter[QuarterIndex] ), ALL ( DimQuarter ),
+        DimQuarter[QuarterIndex] > _idx - 4, DimQuarter[QuarterIndex] <= _idx )
+VAR _n = CALCULATE ( COUNTROWS ( FactKPI ), ALL ( DimQuarter ), DimQuarter[QuarterIndex] IN _win )
+RETURN
+    IF ( _n = 4, CALCULATE ( AVERAGE ( FactKPI[Value] ), ALL ( DimQuarter ), DimQuarter[QuarterIndex] IN _win ) )
+
+// "Good" direction depends on the KPI (unemployment ↓ good, participation ↑ good)
+// Change of the LATEST value vs the same quarter a year earlier (for cards)
+Latest YoY pp =
+VAR _idx = [Latest Quarter Index]
+VAR _ly = CALCULATE ( [KPI Value], ALL ( DimQuarter ), DimQuarter[QuarterIndex] = _idx - 4 )
+RETURN IF ( NOT ISBLANK ( _ly ), [Latest Value] - _ly )
+
+YoY Arrow =
+VAR _d = [Latest YoY pp]
+VAR _better = SELECTEDVALUE ( DimIndicator[BetterWhen] )
+RETURN
+    SWITCH ( TRUE (),
+        ISBLANK ( _d ), "",
+        _d = 0, "▬ 0.0 pp",
+        ( _d < 0 && _better = "lower" ) || ( _d > 0 && _better = "higher" ),
+            "▲ +" & FORMAT ( _d, "0.0" ) & " pp YoY",
+        "▼ " & FORMAT ( ABS ( _d ), "0.0" ) & " pp (worsening)" )
+
+YoY Color =
+VAR _d = [Latest YoY pp]
+VAR _better = SELECTEDVALUE ( DimIndicator[BetterWhen] )
+RETURN
+    SWITCH ( TRUE (),
+        ISBLANK ( _d ) || _d = 0, "#6B7280",
+        ( _d < 0 && _better = "lower" ) || ( _d > 0 && _better = "higher" ), "#0F7B4F",
+        "#B42318" )
+
+// ---------- 4. Vision 2030 targets ---------------------------------------
+Target 2030 Original = MAX ( DimTarget[OriginalTarget2030] )
+Target 2030 Revised  = MAX ( DimTarget[RevisedTarget2030] )
+Baseline Value       = MAX ( DimTarget[BaselineValue] )
+
+Gap to Revised Target pp = [Latest Value] - [Target 2030 Revised]
+
+// 0% = still at baseline, 100% = target reached. Works for both directions:
+// (latest - baseline) / (target - baseline)
+Progress to Revised Target % =
+VAR _b = [Baseline Value]
+VAR _t = [Target 2030 Revised]
+RETURN
+    IF ( NOT ISBLANK ( _t ), DIVIDE ( [Latest Value] - _b, _t - _b ) )
+
+Target Status =
+VAR _p = [Progress to Revised Target %]
+VAR _orig =
+    VAR _b = [Baseline Value]
+    RETURN DIVIDE ( [Latest Value] - _b, [Target 2030 Original] - _b )
+RETURN
+    SWITCH ( TRUE (),
+        ISBLANK ( _p ), BLANK (),
+        _p >= 1, "Revised target met",
+        _orig >= 1, "Original target met · revised target pending",
+        "Below original target" )
+
+// ---------- 5. Fixed-KPI measures (for cards that ignore the indicator slicer)
+Saudi Unemployment Latest =
+CALCULATE ( [Latest Value], DimIndicator[IndicatorKey] = "UR_SA_T" )
+
+Female LFPR Latest =
+CALCULATE ( [Latest Value], DimIndicator[IndicatorKey] = "LFPR_SA_F" )
+
+Non-Oil Growth Latest =
+CALCULATE ( [Latest Value], DimIndicator[IndicatorKey] = "GDP_YOY_NONOIL" )
+
+Female LFPR =   CALCULATE ( [KPI Value], DimIndicator[IndicatorKey] = "LFPR_SA_F" )
+Male LFPR =     CALCULATE ( [KPI Value], DimIndicator[IndicatorKey] = "LFPR_SA_M" )
+Female UR =     CALCULATE ( [KPI Value], DimIndicator[IndicatorKey] = "UR_SA_F" )
+Male UR =       CALCULATE ( [KPI Value], DimIndicator[IndicatorKey] = "UR_SA_M" )
+Female EPR =    CALCULATE ( [KPI Value], DimIndicator[IndicatorKey] = "EPR_SA_F" )
+
+Gender Gap Participation pp = [Male LFPR] - [Female LFPR]
+Gender Gap Unemployment pp  = [Female UR] - [Male UR]
+
+// ---------- 6. Analytical insight: the denominator effect ----------------
+// Unemployment = (participation − employment ratio) / participation.
+// If women leave the labour force, unemployment falls even with no new jobs.
+// This measure asks: what would female unemployment be if participation had
+// stayed at its series peak, holding the employment ratio constant?
+Female LFPR Peak =
+CALCULATE ( MAX ( FactKPI[Value] ), ALL ( DimQuarter ), DimIndicator[IndicatorKey] = "LFPR_SA_F" )
+
+Female UR at Peak Participation =
+VAR _peak = [Female LFPR Peak]
+VAR _epr  = [Female EPR]
+RETURN
+    IF ( NOT ISBLANK ( _epr ), DIVIDE ( _peak - _epr, _peak ) * 100 )
+
+Denominator Effect pp =
+IF ( NOT ISBLANK ( [Female UR at Peak Participation] ),
+     [Female UR at Peak Participation] - [Female UR] )
+
+Female UR Implied (Identity Check) =
+DIVIDE ( [Female LFPR] - [Female EPR], [Female LFPR] ) * 100
+
+// ---------- 7. Economic diversification ----------------------------------
+Non-Oil Growth = CALCULATE ( [KPI Value], DimIndicator[IndicatorKey] = "GDP_YOY_NONOIL" )
+Oil Growth     = CALCULATE ( [KPI Value], DimIndicator[IndicatorKey] = "GDP_YOY_OIL" )
+Total GDP Growth = CALCULATE ( [KPI Value], DimIndicator[IndicatorKey] = "GDP_YOY_T" )
+
+Non-Oil minus Oil Spread pp = [Non-Oil Growth] - [Oil Growth]
+
+Quarters Non-Oil Beat Oil =
+COUNTROWS (
+    FILTER ( VALUES ( DimQuarter[QuarterKey] ),
+        NOT ISBLANK ( [Non-Oil Growth] ) && [Non-Oil Growth] > [Oil Growth] ) )
+
+Non-Oil Share of Real GDP % =
+VAR _latest = TOPN ( 1, GDPLevels, GDPLevels[QuarterKey], DESC )   // "2025Q3" sorts correctly as text
+RETURN MAXX ( _latest, GDPLevels[NonOilSharePct] )
+
+// ---------- 8. Data-quality flags (show on every visual's tooltip) -------
+Estimate Type   = SELECTEDVALUE ( FactKPI[EstimateType], "mixed" )
+Series Vintage  = SELECTEDVALUE ( FactKPI[SeriesVintage], "mixed" )
+
+Is Pre-Revision Series =
+IF ( SELECTEDVALUE ( FactKPI[IsPreRevision] ) = TRUE (), 1, 0 )   // flag added in Power Query
+
+Data Note =
+VAR _n = SELECTEDVALUE ( FactKPI[Note] )
+VAR _flash = SELECTEDVALUE ( FactKPI[IsFlash] )                    // flag added in Power Query
+RETURN
+    TRIM (
+        IF ( _flash = TRUE (), "Flash / partly flash estimate – subject to revision. ", "" ) &
+        IF ( [Is Pre-Revision Series] = 1, "Pre-2023 series (old census base). ", "" ) &
+        _n )
+
+// ---------- 9. Dynamic titles --------------------------------------------
+Title Selected KPI =
+SELECTEDVALUE ( DimIndicator[IndicatorName], "Select an indicator" )
+    & " — latest: " & FORMAT ( [Latest Value], "0.0" ) & "% (" & [Latest Quarter Label] & ")"
+
+// ---------- 10. Design helpers (used by the card layout) -----------------
+// "Down since Q1 2017" on the Overview trend card
+Change Since Start pp =
+VAR _first = CALCULATE ( MIN ( DimQuarter[QuarterIndex] ),
+                 FILTER ( ALL ( DimQuarter ), NOT ISBLANK ( [KPI Value] ) ) )
+VAR _start = CALCULATE ( [KPI Value], ALL ( DimQuarter ), DimQuarter[QuarterIndex] = _first )
+RETURN [Latest Value] - _start
+
+// Highlights the latest column (dark green) — Columns → Color → fx → Field value
+Column Color Latest =
+IF ( MAX ( DimQuarter[QuarterIndex] ) = [Latest Quarter Index], "#0E7C4A", "#A9D4BC" )

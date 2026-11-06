@@ -1,0 +1,101 @@
+table GDPLevels
+	lineageTag: f1bc107a-1279-4a1c-bbe1-f2be31364a67
+
+	column QuarterKey
+		dataType: string
+		lineageTag: 0371f0d8-a925-4230-825c-f54bd9f07b41
+		summarizeBy: none
+		sourceColumn: QuarterKey
+
+		annotation SummarizationSetBy = Automatic
+
+	column OilSARbn
+		dataType: double
+		lineageTag: 9ad27921-d1b3-43af-ad19-2490863a52e8
+		summarizeBy: sum
+		sourceColumn: OilSARbn
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column NonOilSARbn
+		dataType: double
+		lineageTag: 4b3bf8af-286f-4201-9b0b-0cdca337aa8b
+		summarizeBy: sum
+		sourceColumn: NonOilSARbn
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column GovSARbn
+		dataType: double
+		lineageTag: e35f22e4-3ebd-43df-9b4c-282c23590830
+		summarizeBy: sum
+		sourceColumn: GovSARbn
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column NetTaxSARbn
+		dataType: double
+		lineageTag: 696141f4-70e4-430d-b0bc-538028ac56b3
+		summarizeBy: sum
+		sourceColumn: NetTaxSARbn
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column GDPSARbn
+		dataType: double
+		lineageTag: 8c77f032-7d24-4217-aad4-118e596578ec
+		summarizeBy: sum
+		sourceColumn: GDPSARbn
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column NonOilSharePct
+		dataType: double
+		lineageTag: 0ce62021-234b-46eb-9562-3ca6eb639abe
+		summarizeBy: sum
+		sourceColumn: NonOilSharePct
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column OilSharePct
+		dataType: double
+		lineageTag: 8172b2cd-af30-4fad-b942-e83dc58e57fc
+		summarizeBy: sum
+		sourceColumn: OilSharePct
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column SourceID
+		dataType: string
+		lineageTag: f93b13e2-f79a-41b7-bce9-2dbe82e853bc
+		summarizeBy: none
+		sourceColumn: SourceID
+
+		annotation SummarizationSetBy = Automatic
+
+	partition GDPLevels = m
+		mode: import
+		source =
+				let
+				    Source = let Source = Vision2030DB{[Schema="dw",Item="vw_GDPLevels"]}[Data], Typed = Table.TransformColumnTypes(Source, {{"QuarterKey", type text}, {"OilSARbn", type number}, {"NonOilSARbn", type number}, {"GovSARbn", type number}, {"NetTaxSARbn", type number}, {"GDPSARbn", type number}, {"NonOilSharePct", type number}, {"OilSharePct", type number}, {"SourceID", type text}}) in Typed
+				in
+				    Source
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

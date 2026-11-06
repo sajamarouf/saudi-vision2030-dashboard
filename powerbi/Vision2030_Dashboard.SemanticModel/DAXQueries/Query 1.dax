@@ -1,0 +1,100 @@
+DEFINE
+	MEASURE FactKPI[KPI Value] =
+		IF ( HASONEVALUE ( DimIndicator[IndicatorKey] ), AVERAGE ( FactKPI[Value] ) )
+	MEASURE FactKPI[Latest Quarter Index] =
+		CALCULATE ( MAXX ( FactKPI, RELATED ( DimQuarter[QuarterIndex] ) ), ALL ( DimQuarter ) )
+	MEASURE FactKPI[Latest Value] =
+		VAR _idx = [Latest Quarter Index]
+		RETURN CALCULATE ( [KPI Value], ALL ( DimQuarter ), DimQuarter[QuarterIndex] = _idx )
+	MEASURE FactKPI[Latest Quarter Label] =
+		VAR _idx = [Latest Quarter Index]
+		RETURN CALCULATE ( SELECTEDVALUE ( DimQuarter[QuarterLabel] ), ALL ( DimQuarter ), DimQuarter[QuarterIndex] = _idx )
+	MEASURE FactKPI[Value Prev Quarter] =
+		VAR _idx = MAX ( DimQuarter[QuarterIndex] )
+		RETURN CALCULATE ( [KPI Value], ALL ( DimQuarter ), DimQuarter[QuarterIndex] = _idx - 1 )
+	MEASURE FactKPI[Value Same Quarter LY] =
+		VAR _idx = MAX ( DimQuarter[QuarterIndex] )
+		RETURN CALCULATE ( [KPI Value], ALL ( DimQuarter ), DimQuarter[QuarterIndex] = _idx - 4 )
+	MEASURE FactKPI[QoQ Change pp] =
+		IF ( NOT ISBLANK ( [Value Prev Quarter] ), [KPI Value] - [Value Prev Quarter] )
+	MEASURE FactKPI[YoY Change pp] =
+		IF ( NOT ISBLANK ( [Value Same Quarter LY] ), [KPI Value] - [Value Same Quarter LY] )
+	MEASURE FactKPI[Rolling 4Q Avg] =
+		VAR _idx = MAX ( DimQuarter[QuarterIndex] )
+		VAR _win = CALCULATETABLE ( VALUES ( DimQuarter[QuarterIndex] ), ALL ( DimQuarter ), DimQuarter[QuarterIndex] > _idx - 4, DimQuarter[QuarterIndex] <= _idx )
+		VAR _n = CALCULATE ( COUNTROWS ( FactKPI ), ALL ( DimQuarter ), DimQuarter[QuarterIndex] IN _win )
+		RETURN IF ( _n = 4, CALCULATE ( AVERAGE ( FactKPI[Value] ), ALL ( DimQuarter ), DimQuarter[QuarterIndex] IN _win ) )
+	MEASURE FactKPI[Latest YoY pp] =
+		VAR _idx = [Latest Quarter Index]
+		VAR _ly = CALCULATE ( [KPI Value], ALL ( DimQuarter ), DimQuarter[QuarterIndex] = _idx - 4 )
+		RETURN IF ( NOT ISBLANK ( _ly ), [Latest Value] - _ly )
+	MEASURE FactKPI[YoY Arrow] =
+		VAR _d = [Latest YoY pp]
+		VAR _better = SELECTEDVALUE ( DimIndicator[BetterWhen] )
+		RETURN SWITCH ( TRUE (), ISBLANK ( _d ), "", _d = 0, "▬ 0.0 pp", ( _d < 0 && _better = "lower" ) || ( _d > 0 && _better = "higher" ), "▲ " & FORMAT ( ABS ( _d ), "0.0" ) & " pp YoY", "▼ " & FORMAT ( ABS ( _d ), "0.0" ) & " pp YoY" )
+	MEASURE FactKPI[YoY Color] =
+		VAR _d = [Latest YoY pp]
+		VAR _better = SELECTEDVALUE ( DimIndicator[BetterWhen] )
+		RETURN SWITCH ( TRUE (), ISBLANK ( _d ) || _d = 0, "#6B7280", ( _d < 0 && _better = "lower" ) || ( _d > 0 && _better = "higher" ), "#0E7C4A", "#B42318" )
+	MEASURE FactKPI[Target 2030 Original] = MAX ( DimTarget[OriginalTarget2030] )
+	MEASURE FactKPI[Target 2030 Revised] = MAX ( DimTarget[RevisedTarget2030] )
+	MEASURE FactKPI[Baseline Value] = MAX ( DimTarget[BaselineValue] )
+	MEASURE FactKPI[Gap to Revised Target pp] = [Latest Value] - [Target 2030 Revised]
+	MEASURE FactKPI[Progress to Revised Target %] =
+		VAR _b = [Baseline Value]
+		VAR _t = [Target 2030 Revised]
+		RETURN IF ( NOT ISBLANK ( _t ), DIVIDE ( [Latest Value] - _b, _t - _b ) )
+	MEASURE FactKPI[Target Status] =
+		VAR _p = [Progress to Revised Target %]
+		VAR _b = [Baseline Value]
+		VAR _orig = DIVIDE ( [Latest Value] - _b, [Target 2030 Original] - _b )
+		RETURN SWITCH ( TRUE (), ISBLANK ( _p ), BLANK (), _p >= 1, "Revised target met", _orig >= 1, "Original met · revised pending", "Below original target" )
+	MEASURE FactKPI[Saudi Unemployment Latest] = CALCULATE ( [Latest Value], DimIndicator[IndicatorKey] = "UR_SA_T" )
+	MEASURE FactKPI[Female LFPR Latest] = CALCULATE ( [Latest Value], DimIndicator[IndicatorKey] = "LFPR_SA_F" )
+	MEASURE FactKPI[Non-Oil Growth Latest] = CALCULATE ( [Latest Value], DimIndicator[IndicatorKey] = "GDP_YOY_NONOIL" )
+	MEASURE FactKPI[Female LFPR] = CALCULATE ( [KPI Value], DimIndicator[IndicatorKey] = "LFPR_SA_F" )
+	MEASURE FactKPI[Male LFPR] = CALCULATE ( [KPI Value], DimIndicator[IndicatorKey] = "LFPR_SA_M" )
+	MEASURE FactKPI[Female UR] = CALCULATE ( [KPI Value], DimIndicator[IndicatorKey] = "UR_SA_F" )
+	MEASURE FactKPI[Male UR] = CALCULATE ( [KPI Value], DimIndicator[IndicatorKey] = "UR_SA_M" )
+	MEASURE FactKPI[Female EPR] = CALCULATE ( [KPI Value], DimIndicator[IndicatorKey] = "EPR_SA_F" )
+	MEASURE FactKPI[Saudi UR] = CALCULATE ( [KPI Value], DimIndicator[IndicatorKey] = "UR_SA_T" )
+	MEASURE FactKPI[Gender Gap Participation pp] = [Male LFPR] - [Female LFPR]
+	MEASURE FactKPI[Gender Gap Unemployment pp] = [Female UR] - [Male UR]
+	MEASURE FactKPI[Female LFPR Peak] = CALCULATE ( MAX ( FactKPI[Value] ), ALL ( DimQuarter ), DimIndicator[IndicatorKey] = "LFPR_SA_F" )
+	MEASURE FactKPI[Female UR at Peak Participation] =
+		VAR _peak = [Female LFPR Peak]
+		VAR _epr = [Female EPR]
+		RETURN IF ( NOT ISBLANK ( _epr ), DIVIDE ( _peak - _epr, _peak ) * 100 )
+	MEASURE FactKPI[Denominator Effect pp] =
+		IF ( NOT ISBLANK ( [Female UR at Peak Participation] ), [Female UR at Peak Participation] - [Female UR] )
+	MEASURE FactKPI[Female UR Implied (Identity Check)] = DIVIDE ( [Female LFPR] - [Female EPR], [Female LFPR] ) * 100
+	MEASURE FactKPI[Non-Oil Growth] = CALCULATE ( [KPI Value], DimIndicator[IndicatorKey] = "GDP_YOY_NONOIL" )
+	MEASURE FactKPI[Oil Growth] = CALCULATE ( [KPI Value], DimIndicator[IndicatorKey] = "GDP_YOY_OIL" )
+	MEASURE FactKPI[Total GDP Growth] = CALCULATE ( [KPI Value], DimIndicator[IndicatorKey] = "GDP_YOY_T" )
+	MEASURE FactKPI[Non-Oil minus Oil Spread pp] = [Non-Oil Growth] - [Oil Growth]
+	MEASURE FactKPI[Quarters Non-Oil Beat Oil] =
+		COUNTROWS ( FILTER ( VALUES ( DimQuarter[QuarterKey] ), NOT ISBLANK ( [Non-Oil Growth] ) && [Non-Oil Growth] > [Oil Growth] ) )
+	MEASURE FactKPI[Quarters With GDP Data] =
+		COUNTROWS ( FILTER ( VALUES ( DimQuarter[QuarterKey] ), NOT ISBLANK ( [Non-Oil Growth] ) ) )
+	MEASURE FactKPI[Non-Oil Share of Real GDP %] =
+		VAR _latest = TOPN ( 1, GDPLevels, GDPLevels[QuarterKey], DESC )
+		RETURN MAXX ( _latest, GDPLevels[NonOilSharePct] )
+	MEASURE FactKPI[Oil Share of Real GDP %] =
+		VAR _latest = TOPN ( 1, GDPLevels, GDPLevels[QuarterKey], DESC )
+		RETURN MAXX ( _latest, GDPLevels[OilSharePct] )
+	MEASURE FactKPI[Estimate Type] = SELECTEDVALUE ( FactKPI[EstimateType], "mixed" )
+	MEASURE FactKPI[Series Vintage] = SELECTEDVALUE ( FactKPI[SeriesVintage], "mixed" )
+	MEASURE FactKPI[Is Pre-Revision Series] = IF ( SELECTEDVALUE ( FactKPI[IsPreRevision] ) = TRUE (), 1, 0 )
+	MEASURE FactKPI[Data Note] =
+		VAR _n = SELECTEDVALUE ( FactKPI[Note] )
+		VAR _flash = SELECTEDVALUE ( FactKPI[IsFlash] )
+		RETURN TRIM ( IF ( _flash = TRUE (), "Flash / partly flash estimate - subject to revision. ", "" ) & IF ( [Is Pre-Revision Series] = 1, "Pre-2023 series (old census base). ", "" ) & _n )
+	MEASURE FactKPI[Change Since Start pp] =
+		VAR _first = CALCULATE ( MIN ( DimQuarter[QuarterIndex] ), FILTER ( ALL ( DimQuarter ), NOT ISBLANK ( [KPI Value] ) ) )
+		VAR _start = CALCULATE ( [KPI Value], ALL ( DimQuarter ), DimQuarter[QuarterIndex] = _first )
+		RETURN [Latest Value] - _start
+	MEASURE FactKPI[Column Color Latest] =
+		IF ( MAX ( DimQuarter[QuarterIndex] ) = [Latest Quarter Index], "#0E7C4A", "#A9D4BC" )
+
+EVALUATE
+	SUMMARIZECOLUMNS ( DimIndicator[IndicatorKey], "Latest", [Latest Value], "Quarter", [Latest Quarter Label], "YoY", [Latest YoY pp], "Status", [Target Status] )

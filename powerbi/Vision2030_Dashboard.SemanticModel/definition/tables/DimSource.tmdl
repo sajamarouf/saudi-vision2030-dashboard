@@ -1,0 +1,64 @@
+table DimSource
+	lineageTag: 5c0bec17-cb77-4fdf-ae53-3caf357e59b9
+
+	column SourceID
+		dataType: string
+		lineageTag: a5ed6215-a98f-4cb7-aca7-410f4bb4bf84
+		summarizeBy: none
+		sourceColumn: SourceID
+
+		annotation SummarizationSetBy = Automatic
+
+	column Publisher
+		dataType: string
+		lineageTag: 9facccdf-0f75-4999-8bd0-0132211037d4
+		summarizeBy: none
+		sourceColumn: Publisher
+
+		annotation SummarizationSetBy = Automatic
+
+	column Title
+		dataType: string
+		lineageTag: 395fa523-edc5-4285-98f9-9012fa513fc9
+		summarizeBy: none
+		sourceColumn: Title
+
+		annotation SummarizationSetBy = Automatic
+
+	column Url
+		dataType: string
+		lineageTag: 8b6964d9-ae17-48bd-bfba-a3484e881639
+		summarizeBy: none
+		sourceColumn: Url
+
+		annotation SummarizationSetBy = Automatic
+
+	column SourceType
+		dataType: string
+		lineageTag: a4f8a5ec-8471-4509-9bb9-8e38f46cdfd2
+		summarizeBy: none
+		sourceColumn: SourceType
+
+		annotation SummarizationSetBy = Automatic
+
+	column IsPrimary
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 218ae9f9-a3d5-4227-88cb-416d055092ab
+		summarizeBy: none
+		sourceColumn: IsPrimary
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DimSource = m
+		mode: import
+		source =
+				let
+				    Source = let Source = Vision2030DB{[Schema="dw",Item="DimSource"]}[Data], Typed = Table.TransformColumnTypes(Source, {{"SourceID", type text}, {"Publisher", type text}, {"Title", type text}, {"Url", type text}, {"SourceType", type text}}), AddPrimary = Table.AddColumn(Typed, "IsPrimary", each Text.StartsWith([SourceType], "primary"), type logical) in AddPrimary
+				in
+				    Source
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

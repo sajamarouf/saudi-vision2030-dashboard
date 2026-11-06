@@ -1,0 +1,23 @@
+table pDatabase
+	lineageTag: f4f241c3-d06b-4012-b28b-3170e2cc6271
+
+	column pDatabase
+		dataType: string
+		lineageTag: 97c64af6-3617-46e3-b596-00ae0acb62b2
+		summarizeBy: none
+		sourceColumn: pDatabase
+
+		annotation SummarizationSetBy = Automatic
+
+	partition pDatabase = m
+		mode: import
+		source =
+				let
+				    Source = "Vision2030" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+				in
+				    Source
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Text
+

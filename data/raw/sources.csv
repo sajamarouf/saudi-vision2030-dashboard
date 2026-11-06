@@ -1,0 +1,25 @@
+source_id,publisher,title,url,primary_or_secondary
+GLMM_LFPR,Gulf Labour Markets & Migration (GRC) compiling GASTAT,Saudi Arabia LFPR by nationality and sex Q1 2021-Q1 2026 (census-2022 revised),https://gulfmigration.grc.net/saudi-arabia-labour-force-participation-rates-by-nationality-saudi-non-saudi-and-sex-q1-2021-q1-2026/,secondary (verbatim GASTAT table)
+GLMM_LFPR_2016,Gulf Labour Markets & Migration (GRC) compiling GASTAT,Saudi Arabia LFPR Q2 2016-Q3 2023,https://gulfmigration.grc.net/saudi-arabia-labour-force-participation-rates-by-nationality-saudi-non-saudi-and-sex-q2-2016-q3-2023/,secondary (verbatim GASTAT table)
+ARGAAM_UR,Argaam,Unemployment among Saudis down to 7.1% in Q2 2024 (history table),https://www.argaam.com/en/article/articledetail/id/1757560,secondary
+ARGAAM_Q3_2024,Argaam,Unemployment among Saudis up to 7.8% in Q3 2024,https://www.argaam.com/en/article/articledetail/id/1779328,secondary
+AMWAL_Q3_2024,Amwal Al Ghad,S. Arabia unemployment rises to 7.8% in Q3-24,https://en.amwalalghad.com/?p=188052,secondary
+GASTAT_LMS_Q1_2024,GASTAT,Labor Market Publication Q1 2024 (news),https://stats.gov.sa/en/news/535,primary
+GASTAT_LMS_Q2_2024,GASTAT,Labor Market Statistics Q2 2024 press release,https://stats.gov.sa/sites/default/files/LMS%20Q2_2024_PR_EN_0.pdf,primary
+GASTAT_LMS_Q1_2025,GASTAT,Labor Market Statistics Q1 2025 press release,https://www.stats.gov.sa/documents/d/guest/lms-q1_2025_pr_en-press-release-1-pdf,primary
+GASTAT_LMS_Q2_2025,GASTAT,GASTAT publishes Labor Market Statistics for Q2 of 2025,https://stats.gov.sa/en/w/news/93,primary
+GASTAT_LMS_Q3_2025,GASTAT,GASTAT publishes Labor Market Statistics for Q3 of 2025,https://www.stats.gov.sa/en/w/news/146,primary
+GASTAT_LMS_Q4_2025,GASTAT,Labor Market Statistics Q4 2025 press release,https://www.stats.gov.sa/documents/d/guest/lms-q4_2025_pr_en-press-release-1-pdf,primary
+GASTAT_LMS_Q1_2026,Gulf News reporting GASTAT,Saudi unemployment falls to 6.4% in Q1 2026,https://gulfnews.com/world/gulf/saudi/saudi-unemployment-falls-to-64-in-q1-2026-1.500592445,secondary
+ENT_Q2_2026,EnterpriseAM reporting GASTAT,First wartime labor data: women's employment stalls as participation slips,https://enterpriseam.com/ksa/2026/10/01/first-wartime-labor-data-womens-employment-stalls-as-participation-slips/,secondary
+IMF_A4_2025,IMF,Saudi Arabia 2025 Article IV staff report,https://www.imf.org/-/media/files/publications/cr/2025/english/1sauea2025001-source-pdf.pdf,primary
+GASTAT_GDP_Q1_2025,WAM reporting GASTAT,Saudi Arabia's real GDP grows 3.4% in Q1 2025,https://www.wam.ae/en/article/bk3mkxr-saudi-arabias-real-gdp-grows-34-2025,secondary
+GASTAT_GDP_Q2_2025,GASTAT,Non-oil activities grow by 4.6% in Q2 2025,https://stats.gov.sa/en/w/news/83,primary
+GASTAT_GDP_Q3_2025,GASTAT,Saudi economy grows by 4.8% in Q3 2025,https://stats.gov.sa/en/w/news/131,primary
+GASTAT_GDP_2025,GASTAT,Saudi economy records 4.5% growth in 2025,https://www.stats.gov.sa/en/w/news/171,primary
+GASTAT_GDP_Q1_2026,GASTAT,Saudi economy records 3.0% growth in Q1 of 2026,https://stats.gov.sa/en/w/news/199,primary
+GASTAT_FLASH_Q2_2026,Arab News reporting GASTAT,Saudi non-oil activities up 0.6% in Q2,https://www.arabnews.pk/node/2652792/business-economy,secondary
+GASTAT_FLASH_Q3_2026,GASTAT,Real GDP flash estimates Q3 2026,https://www.stats.gov.sa/documents/d/guest/gdp-flash-estimatesq3-2026-en,primary
+ARGAAM_GDP_Q3_2025,Argaam,Saudi GDP rises 4.8% in Q3 2025 (levels table),https://www.argaam.com/en/article/articledetail/id/1864350,secondary
+ARABNEWS_TARGET_5,Arab News,Saudi Arabia sets new unemployment rate target of 5% by 2030,https://www.arabnews.pk/node/2580945,secondary
+AAWSAT_TARGET_40,Asharq Al-Awsat,Saudi Vision drives localization; female participation goal revised to 40%,https://english.aawsat.com/node/5136748,secondary

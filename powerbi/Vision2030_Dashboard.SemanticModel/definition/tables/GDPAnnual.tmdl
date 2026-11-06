@@ -1,0 +1,80 @@
+table GDPAnnual
+	lineageTag: 9102144a-ee78-405c-a887-0f3ac35587a0
+
+	column Year
+		dataType: int64
+		formatString: 0
+		lineageTag: 7193c1f3-fbb7-4988-be2a-46acc9cc3270
+		summarizeBy: sum
+		sourceColumn: Year
+
+		annotation SummarizationSetBy = Automatic
+
+	column TotalGDP
+		dataType: double
+		lineageTag: c266f639-1d39-4ec5-af24-3dbcc983765f
+		summarizeBy: sum
+		sourceColumn: TotalGDP
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Oil
+		dataType: double
+		lineageTag: 771e520d-e0ac-48ab-9b0a-d657d002c6e6
+		summarizeBy: sum
+		sourceColumn: Oil
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column NonOil
+		dataType: double
+		lineageTag: 7071dbd7-019a-46ed-9997-d3dc55a2a2c8
+		summarizeBy: sum
+		sourceColumn: NonOil
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Government
+		dataType: double
+		lineageTag: a0f97f21-425a-438f-a6fb-9238641f0650
+		summarizeBy: sum
+		sourceColumn: Government
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column SourceID
+		dataType: string
+		lineageTag: d98adb82-2d1e-4cd1-8cec-d90ee72f0e20
+		summarizeBy: none
+		sourceColumn: SourceID
+
+		annotation SummarizationSetBy = Automatic
+
+	column Note
+		dataType: string
+		lineageTag: 4de0c62a-c069-49db-b607-644dc24ae732
+		summarizeBy: none
+		sourceColumn: Note
+
+		annotation SummarizationSetBy = Automatic
+
+	partition GDPAnnual = m
+		mode: import
+		source =
+				let
+				    Source = let Source = Vision2030DB{[Schema="stg",Item="GDPGrowthAnnual"]}[Data], Typed = Table.TransformColumnTypes(Source, {{"Year", Int64.Type}, {"TotalGDP", type number}, {"Oil", type number}, {"NonOil", type number}, {"Government", type number}, {"SourceID", type text}, {"Note", type text}}) in Typed
+				in
+				    Source
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

@@ -1,0 +1,71 @@
+table DimIndicator
+	lineageTag: 01eed072-5657-47d8-b77a-7751cfeea16a
+
+	column IndicatorKey
+		dataType: string
+		lineageTag: c16b8a4f-837b-412e-ba2e-c9d39d3fe5ac
+		summarizeBy: none
+		sourceColumn: IndicatorKey
+
+		annotation SummarizationSetBy = Automatic
+
+	column IndicatorName
+		dataType: string
+		lineageTag: 0cea0a8f-f140-4404-87ff-7b8cc1ffd715
+		summarizeBy: none
+		sourceColumn: IndicatorName
+
+		annotation SummarizationSetBy = Automatic
+
+	column IndicatorNameAr
+		dataType: string
+		lineageTag: bb6d2364-8d73-406c-9099-8c8339ed4c54
+		summarizeBy: none
+		sourceColumn: IndicatorNameAr
+
+		annotation SummarizationSetBy = Automatic
+
+	column Domain
+		dataType: string
+		lineageTag: 76191f5c-066b-4e21-ba57-586368ad08d2
+		summarizeBy: none
+		sourceColumn: Domain
+
+		annotation SummarizationSetBy = Automatic
+
+	column Population
+		dataType: string
+		lineageTag: 34ab191f-393e-45a5-9f90-f586181ab1ab
+		summarizeBy: none
+		sourceColumn: Population
+
+		annotation SummarizationSetBy = Automatic
+
+	column Unit
+		dataType: string
+		lineageTag: 30a5c102-1adb-42dc-96b5-867a8f9f9386
+		summarizeBy: none
+		sourceColumn: Unit
+
+		annotation SummarizationSetBy = Automatic
+
+	column BetterWhen
+		dataType: string
+		lineageTag: ca93d2b0-61ad-48e3-9f42-449fdf609a20
+		summarizeBy: none
+		sourceColumn: BetterWhen
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DimIndicator = m
+		mode: import
+		source =
+				let
+				    Source = let Source = Vision2030DB{[Schema="dw",Item="DimIndicator"]}[Data], Typed = Table.TransformColumnTypes(Source, {{"IndicatorKey", type text}, {"IndicatorName", type text}, {"IndicatorNameAr", type text}, {"Domain", type text}, {"Population", type text}, {"Unit", type text}, {"BetterWhen", type text}}) in Typed
+				in
+				    Source
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

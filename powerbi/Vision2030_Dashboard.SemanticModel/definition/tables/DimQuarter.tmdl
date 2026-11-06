@@ -1,0 +1,94 @@
+table DimQuarter
+	lineageTag: 42fbc745-0269-473b-84bb-946c1b6f6f6d
+
+	column QuarterKey
+		dataType: string
+		lineageTag: 83a3b95d-310d-4301-8d05-f3fb8ca46409
+		summarizeBy: none
+		sourceColumn: QuarterKey
+
+		annotation SummarizationSetBy = Automatic
+
+	column Year
+		dataType: int64
+		formatString: 0
+		lineageTag: 937d600b-248d-4483-98de-1a9627080b38
+		summarizeBy: sum
+		sourceColumn: Year
+
+		annotation SummarizationSetBy = Automatic
+
+	column QuarterNum
+		dataType: int64
+		formatString: 0
+		lineageTag: d4be3990-09e6-47e8-b998-aa7638a96642
+		summarizeBy: sum
+		sourceColumn: QuarterNum
+
+		annotation SummarizationSetBy = Automatic
+
+	column QuarterLabel
+		dataType: string
+		lineageTag: a8eeb15e-7e16-45ef-85f1-7314d0915a34
+		summarizeBy: none
+		sourceColumn: QuarterLabel
+		sortByColumn: QuarterIndex
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	column QuarterStart
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 2f354d1e-f72d-4496-887f-f6d17f24b4e1
+		summarizeBy: none
+		sourceColumn: QuarterStart
+
+		variation Variation
+			isDefault
+			relationship: 0bef74fc-1089-4e11-8f88-ea59c1f73a0a
+			defaultHierarchy: LocalDateTable_4ac4da57-391b-46f0-bbca-71b9168a8782.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column QuarterIndex
+		dataType: int64
+		formatString: 0
+		lineageTag: ba22e733-db61-44e5-a24f-91d01b95f9fd
+		summarizeBy: sum
+		sourceColumn: QuarterIndex
+
+		annotation SummarizationSetBy = Automatic
+
+	column Period
+		dataType: string
+		lineageTag: f2eacc2d-f057-4b56-90bc-5b8958c03998
+		summarizeBy: none
+		sourceColumn: Period
+
+		annotation SummarizationSetBy = Automatic
+
+	column IsCovidShock
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 58200c0d-057c-4e25-824d-87c36e21fd20
+		summarizeBy: none
+		sourceColumn: IsCovidShock
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DimQuarter = m
+		mode: import
+		source =
+				let
+				    Source = let Keys = List.Distinct(FactKPI[QuarterKey]), ToAbs = (k as text) as number => Number.From(Text.Start(k, 4)) * 4 + Number.From(Text.End(k, 1)) - 1, AbsList = List.Transform(Keys, ToAbs), MinAbs = List.Min(AbsList), MaxAbs = List.Max(AbsList), Base = Table.FromList({MinAbs .. MaxAbs}, Splitter.SplitByNothing(), {"Abs"}), AddYear = Table.AddColumn(Base, "Year", each Number.IntegerDivide([Abs], 4), Int64.Type), AddQNum = Table.AddColumn(AddYear, "QuarterNum", each Number.Mod([Abs], 4) + 1, Int64.Type), AddKey = Table.AddColumn(AddQNum, "QuarterKey", each Text.From([Year]) & "Q" & Text.From([QuarterNum]), type text), AddLabel = Table.AddColumn(AddKey, "QuarterLabel", each "Q" & Text.From([QuarterNum]) & " " & Text.From([Year]), type text), AddStart = Table.AddColumn(AddLabel, "QuarterStart", each #date([Year], ([QuarterNum] - 1) * 3 + 1, 1), type date), AddIndex = Table.AddColumn(AddStart, "QuarterIndex", each [Abs] - MinAbs + 1, Int64.Type), AddPeriod = Table.AddColumn(AddIndex, "Period", each if [Year] <= 2019 then "Pre-COVID (2017-19)" else if [Year] <= 2021 then "COVID & recovery (2020-21)" else if [Year] <= 2024 then "Acceleration (2022-24)" else "Late Vision (2025+)", type text), AddCovid = Table.AddColumn(AddPeriod, "IsCovidShock", each List.Contains({"2020Q2", "2020Q3"}, [QuarterKey]), type logical), Result = Table.SelectColumns(AddCovid, {"QuarterKey", "Year", "QuarterNum", "QuarterLabel", "QuarterStart", "QuarterIndex", "Period", "IsCovidShock"}) in Result
+				in
+				    Source
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

@@ -1,0 +1,3 @@
+kpi_key,kpi_name,kpi_name_ar,baseline_value,baseline_period,original_target_2030,revised_target_2030,revised_when,better_when,source_id
+saudi_unemployment,Saudi unemployment rate,معدل البطالة بين السعوديين,12.7,2017Q1 (earliest in dataset),7.0,5.0,Nov 2024,lower,ARABNEWS_TARGET_5
+female_lfpr,Saudi female labour force participation,مشاركة المرأة السعودية في سوق العمل,17.7,2016Q2,30.0,40.0,2024-2025,higher,AAWSAT_TARGET_40;GLMM_LFPR_2016

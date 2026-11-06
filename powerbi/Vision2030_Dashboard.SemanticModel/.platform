@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "SemanticModel",
+    "displayName": "Vision2030_Dashboard"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "24d4a687-cd2b-4fa1-a0bb-fb4defe86523"
+  }
+}

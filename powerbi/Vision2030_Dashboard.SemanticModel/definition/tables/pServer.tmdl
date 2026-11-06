@@ -1,0 +1,23 @@
+table pServer
+	lineageTag: 16e5471d-7395-4ba6-adf9-6266224b7232
+
+	column pServer
+		dataType: string
+		lineageTag: 6a20279c-8d5f-4956-bc0e-557e388a81a0
+		summarizeBy: none
+		sourceColumn: pServer
+
+		annotation SummarizationSetBy = Automatic
+
+	partition pServer = m
+		mode: import
+		source =
+				let
+				    Source = "localhost\SQLEXPRESS" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+				in
+				    Source
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Text
+

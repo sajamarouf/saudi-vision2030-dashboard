@@ -1,0 +1,30 @@
+model Model
+	culture: en-US
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	sourceQueryCulture: en-US
+	valueFilterBehavior: independent
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+annotation __PBI_TimeIntelligenceEnabled = 1
+
+annotation PBI_QueryOrder = ["pServer","pDatabase","Vision2030DB","FactKPI","DimQuarter","DimIndicator","DimTarget","DimSource","GDPLevels","GDPAnnual","QA_FemaleIdentity"]
+
+annotation PBI_ProTooling = ["DaxQueryView_Desktop","DevMode"]
+
+ref table pServer
+ref table pDatabase
+ref table FactKPI
+ref table DimQuarter
+ref table DateTableTemplate_a33969a3-2203-4fed-90dd-06131ad9756a
+ref table LocalDateTable_4ac4da57-391b-46f0-bbca-71b9168a8782
+ref table DimIndicator
+ref table DimTarget
+ref table DimSource
+ref table GDPLevels
+ref table GDPAnnual
+ref table QA_FemaleIdentity
+
+ref cultureInfo en-US
+

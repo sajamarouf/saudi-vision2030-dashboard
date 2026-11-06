@@ -1,0 +1,70 @@
+{
+  "name": "Vision 2030 – Soft Green Cards",
+  "dataColors": ["#0E7C4A", "#B5832A", "#A9D4BC", "#3E9C6E", "#0B5F39", "#8A6420", "#E3F1E8", "#5B6660"],
+  "background": "#FFFFFF",
+  "foreground": "#16201B",
+  "tableAccent": "#0E7C4A",
+  "good": "#0E7C4A",
+  "neutral": "#98A19C",
+  "bad": "#B42318",
+  "maximum": "#0E7C4A",
+  "center": "#A9D4BC",
+  "minimum": "#E3F1E8",
+  "textClasses": {
+    "callout": { "fontFace": "Segoe UI Semibold", "fontSize": 26, "color": "#16201B" },
+    "title":   { "fontFace": "Segoe UI Semibold", "fontSize": 11, "color": "#16201B" },
+    "header":  { "fontFace": "Segoe UI Semibold", "fontSize": 10, "color": "#16201B" },
+    "label":   { "fontFace": "Segoe UI", "fontSize": 9, "color": "#98A19C" }
+  },
+  "visualStyles": {
+    "*": {
+      "*": {
+        "background": [{ "show": false }],
+        "border": [{ "show": false }],
+        "dropShadow": [{ "show": false }],
+        "visualHeader": [{ "show": false }],
+        "title": [{ "show": false }],
+        "categoryAxis": [{ "gridlineShow": false, "showAxisTitle": false, "labelColor": { "solid": { "color": "#98A19C" } }, "fontSize": 9 }],
+        "valueAxis": [{ "gridlineShow": true, "gridlineStyle": "dashed", "gridlineColor": { "solid": { "color": "#E6E8E6" } }, "showAxisTitle": false, "labelColor": { "solid": { "color": "#98A19C" } }, "fontSize": 9 }],
+        "legend": [{ "show": false }]
+      }
+    },
+    "page": {
+      "*": {
+        "background": [{ "color": { "solid": { "color": "#ECEDEB" } }, "transparency": 0 }],
+        "outspace": [{ "color": { "solid": { "color": "#ECEDEB" } } }]
+      }
+    },
+    "lineChart": {
+      "*": {
+        "lineStyles": [{ "strokeWidth": 2, "showMarker": false }]
+      }
+    },
+    "areaChart": {
+      "*": {
+        "lineStyles": [{ "strokeWidth": 2, "areaShow": true, "shadeTransparency": 75 }],
+        "categoryAxis": [{ "show": false }],
+        "valueAxis": [{ "show": false, "gridlineShow": false }]
+      }
+    },
+    "clusteredColumnChart": {
+      "*": {
+        "dataPoint": [{ "fill": { "solid": { "color": "#A9D4BC" } } }],
+        "labels": [{ "show": false }]
+      }
+    },
+    "tableEx": {
+      "*": {
+        "grid": [{ "gridVertical": false, "gridHorizontal": true, "gridHorizontalColor": { "solid": { "color": "#E6E8E6" } }, "rowPadding": 6, "outlineColor": { "solid": { "color": "#FFFFFF" } } }],
+        "columnHeaders": [{ "fontColor": { "solid": { "color": "#98A19C" } }, "backColor": { "solid": { "color": "#FFFFFF" } }, "fontFamily": "Segoe UI", "fontSize": 9, "outline": "None" }],
+        "values": [{ "fontColorPrimary": { "solid": { "color": "#16201B" } }, "backColorPrimary": { "solid": { "color": "#FFFFFF" } }, "backColorSecondary": { "solid": { "color": "#F7F8F7" } }, "fontSize": 9, "outline": "None" }]
+      }
+    },
+    "slicer": {
+      "*": {
+        "header": [{ "show": false }],
+        "items": [{ "fontColor": { "solid": { "color": "#16201B" } }, "background": { "solid": { "color": "#FFFFFF" } }, "textSize": 9 }]
+      }
+    }
+  }
+}

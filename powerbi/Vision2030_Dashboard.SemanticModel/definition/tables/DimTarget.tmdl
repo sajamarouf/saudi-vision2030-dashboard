@@ -1,0 +1,93 @@
+table DimTarget
+	lineageTag: b903109d-64dc-496d-bc2a-77db8d4ea617
+
+	column IndicatorKey
+		dataType: string
+		lineageTag: 850bfae4-4f86-4b09-8ceb-e1ab53953735
+		summarizeBy: none
+		sourceColumn: IndicatorKey
+
+		annotation SummarizationSetBy = Automatic
+
+	column KPIName
+		dataType: string
+		lineageTag: 896a87a4-92b2-4318-b978-597291175a76
+		summarizeBy: none
+		sourceColumn: KPIName
+
+		annotation SummarizationSetBy = Automatic
+
+	column KPINameAr
+		dataType: string
+		lineageTag: afcc53b1-fb55-4c6a-9fb2-f037d9e7a246
+		summarizeBy: none
+		sourceColumn: KPINameAr
+
+		annotation SummarizationSetBy = Automatic
+
+	column BaselineValue
+		dataType: double
+		lineageTag: 279d38db-00d1-4bee-81fc-ad5181c49797
+		summarizeBy: sum
+		sourceColumn: BaselineValue
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column BaselinePeriod
+		dataType: string
+		lineageTag: 683be51e-dc84-4e4f-9590-e312f61346c8
+		summarizeBy: none
+		sourceColumn: BaselinePeriod
+
+		annotation SummarizationSetBy = Automatic
+
+	column OriginalTarget2030
+		dataType: double
+		lineageTag: bbbc74da-3043-45a5-81f5-1f1f4321513f
+		summarizeBy: sum
+		sourceColumn: OriginalTarget2030
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column RevisedTarget2030
+		dataType: double
+		lineageTag: 333e579b-d728-4d1e-9b19-806cb08df7aa
+		summarizeBy: sum
+		sourceColumn: RevisedTarget2030
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column RevisedWhen
+		dataType: string
+		lineageTag: b16ee161-bd03-4310-be4e-f2e07f9a31ee
+		summarizeBy: none
+		sourceColumn: RevisedWhen
+
+		annotation SummarizationSetBy = Automatic
+
+	column SourceID
+		dataType: string
+		lineageTag: 144297e1-47c8-48e3-a6b6-db18cb75d16d
+		summarizeBy: none
+		sourceColumn: SourceID
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DimTarget = m
+		mode: import
+		source =
+				let
+				    Source = let Source = Vision2030DB{[Schema="dw",Item="DimTarget"]}[Data], Typed = Table.TransformColumnTypes(Source, {{"IndicatorKey", type text}, {"KPIName", type text}, {"KPINameAr", type text}, {"BaselineValue", type number}, {"BaselinePeriod", type text}, {"OriginalTarget2030", type number}, {"RevisedTarget2030", type number}, {"RevisedWhen", type text}, {"SourceID", type text}}) in Typed
+				in
+				    Source
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

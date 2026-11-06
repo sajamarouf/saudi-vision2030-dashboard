@@ -1,0 +1,14 @@
+# Power BI local cache and per-user settings
+**/.pbi/localSettings.json
+**/.pbi/cache.abf
+
+# Archives (the repo itself is the source of truth)
+*.zip
+
+# OS / editor files
+desktop.ini
+Thumbs.db
+.DS_Store
+.vscode/
+__pycache__/
+*.pyc

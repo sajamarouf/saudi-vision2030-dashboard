@@ -1,0 +1,95 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/report/3.3.0/schema.json",
+  "themeCollection": {
+    "baseTheme": {
+      "name": "Fluent2-CY26SU10",
+      "reportVersionAtImport": {
+        "visual": "2.14.0",
+        "report": "3.4.0",
+        "page": "2.3.1"
+      },
+      "type": "SharedResources"
+    },
+    "customTheme": {
+      "name": "Vision_2030___Soft_Green_Cards015188874769359928.json",
+      "reportVersionAtImport": {
+        "visual": "2.14.0",
+        "report": "3.4.0",
+        "page": "2.3.1"
+      },
+      "type": "RegisteredResources"
+    }
+  },
+  "objects": {
+    "section": [
+      {
+        "properties": {
+          "verticalAlignment": {
+            "expr": {
+              "Literal": {
+                "Value": "'Top'"
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
+  "resourcePackages": [
+    {
+      "name": "SharedResources",
+      "type": "SharedResources",
+      "items": [
+        {
+          "name": "Fluent2-CY26SU10",
+          "path": "BaseThemes/Fluent2-CY26SU10.json",
+          "type": "BaseTheme"
+        }
+      ]
+    },
+    {
+      "name": "RegisteredResources",
+      "type": "RegisteredResources",
+      "items": [
+        {
+          "name": "bg_page1031229767923726892.png",
+          "path": "bg_page1031229767923726892.png",
+          "type": "Image"
+        },
+        {
+          "name": "bg_page27318095293527865.png",
+          "path": "bg_page27318095293527865.png",
+          "type": "Image"
+        },
+        {
+          "name": "bg_page349893207742670687.png",
+          "path": "bg_page349893207742670687.png",
+          "type": "Image"
+        },
+        {
+          "name": "bg_page45979624821985715.png",
+          "path": "bg_page45979624821985715.png",
+          "type": "Image"
+        },
+        {
+          "name": "bg_page513627776670882707.png",
+          "path": "bg_page513627776670882707.png",
+          "type": "Image"
+        },
+        {
+          "name": "Vision_2030___Soft_Green_Cards015188874769359928.json",
+          "path": "Vision_2030___Soft_Green_Cards015188874769359928.json",
+          "type": "CustomTheme"
+        }
+      ]
+    }
+  ],
+  "settings": {
+    "useStylableVisualContainerHeader": true,
+    "exportDataMode": "AllowSummarized",
+    "defaultDrillFilterOtherVisuals": true,
+    "allowChangeFilterTypes": true,
+    "useEnhancedTooltips": true,
+    "useDefaultAggregateDisplayName": true
+  }
+}

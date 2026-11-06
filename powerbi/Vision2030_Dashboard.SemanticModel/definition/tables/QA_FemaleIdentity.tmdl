@@ -1,0 +1,81 @@
+table QA_FemaleIdentity
+	lineageTag: 60727fbd-c246-4280-8e1e-22744c6c58a3
+
+	column QuarterKey
+		dataType: string
+		lineageTag: 69d8d56e-e47b-40a9-b6fb-298f3c214a34
+		summarizeBy: none
+		sourceColumn: QuarterKey
+
+		annotation SummarizationSetBy = Automatic
+
+	column LFPR
+		dataType: double
+		lineageTag: 7004d87b-41bf-4199-8c34-1a818334604f
+		summarizeBy: sum
+		sourceColumn: LFPR
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column EPR
+		dataType: double
+		lineageTag: 03b04c61-d78d-4338-8d27-1b82100cc5e8
+		summarizeBy: sum
+		sourceColumn: EPR
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column UR_Published
+		dataType: double
+		lineageTag: 65bccfe1-fc11-49d6-aabc-1dfb6d1aeac9
+		summarizeBy: sum
+		sourceColumn: UR_Published
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column UR_Implied
+		dataType: double
+		lineageTag: d48be5b0-6958-4852-8988-8cbd245668de
+		summarizeBy: sum
+		sourceColumn: UR_Implied
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column GapPP
+		dataType: double
+		lineageTag: e343bacc-fdc3-4710-9601-a9cb43bd09f1
+		summarizeBy: sum
+		sourceColumn: GapPP
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Check
+		dataType: string
+		lineageTag: d9c51770-cbf0-4f60-a5a0-db735efd7b1d
+		summarizeBy: none
+		sourceColumn: Check
+
+		annotation SummarizationSetBy = Automatic
+
+	partition QA_FemaleIdentity = m
+		mode: import
+		source =
+				let
+				    Source = let Source = Vision2030DB{[Schema="dw",Item="vw_QA_FemaleIdentity"]}[Data], Typed = Table.TransformColumnTypes(Source, {{"QuarterKey", type text}, {"LFPR", type number}, {"EPR", type number}, {"UR_Published", type number}, {"UR_Implied", type number}, {"GapPP", type number}}), AddPass = Table.AddColumn(Typed, "Check", each if Number.Abs([GapPP]) <= 0.35 then "Pass" else "Fail", type text) in AddPass
+				in
+				    Source
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

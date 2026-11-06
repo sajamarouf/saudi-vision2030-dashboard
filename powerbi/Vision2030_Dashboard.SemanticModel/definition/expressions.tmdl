@@ -1,0 +1,11 @@
+expression Vision2030DB =
+		let
+		    Source = Sql.Database(pServer, pDatabase)
+		in
+		    Source
+	lineageTag: df6768ec-38bd-46e4-b735-c612eee320d0
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

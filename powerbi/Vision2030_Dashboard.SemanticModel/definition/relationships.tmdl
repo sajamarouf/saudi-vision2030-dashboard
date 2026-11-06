@@ -1,0 +1,19 @@
+relationship 0bef74fc-1089-4e11-8f88-ea59c1f73a0a
+	joinOnDateBehavior: datePartOnly
+	fromColumn: DimQuarter.QuarterStart
+	toColumn: LocalDateTable_4ac4da57-391b-46f0-bbca-71b9168a8782.Date
+
+relationship AutoDetected_ae740744-81b3-465e-81c5-0302526f3c22
+	fromColumn: FactKPI.QuarterKey
+	toColumn: DimQuarter.QuarterKey
+
+relationship AutoDetected_7d49c443-9fd2-4cf7-b81d-e49ac0aef652
+	fromColumn: FactKPI.IndicatorKey
+	toColumn: DimIndicator.IndicatorKey
+
+relationship AutoDetected_dc8ef8fe-fa21-4154-b88c-f918465c131d
+	crossFilteringBehavior: bothDirections
+	fromCardinality: one
+	fromColumn: DimTarget.IndicatorKey
+	toColumn: DimIndicator.IndicatorKey
+
